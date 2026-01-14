@@ -3,11 +3,13 @@ using Fitness.Contexts;
 using Fitness.Helpers;
 using Fitness.Models;
 using Fitness.ViewModels.TrainerViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fitness.Areas.Admin.Controllers;
 [Area("Admin")]
+[Authorize(Roles ="Admin")]
 public class TrainerController : Controller
 {
     private readonly AppDbContext _context;

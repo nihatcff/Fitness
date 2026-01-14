@@ -1,4 +1,6 @@
 using Fitness.Contexts;
+using Fitness.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fitness
@@ -15,6 +17,13 @@ namespace Fitness
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Home"));
             });
+
+
+            builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+            }).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
             var app = builder.Build();
 
