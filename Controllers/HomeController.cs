@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Fitness.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : Controller    
     {
         public IActionResult Index()
         {
