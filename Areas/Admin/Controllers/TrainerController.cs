@@ -72,7 +72,7 @@ public class TrainerController : Controller
             return View(vm);
         }
 
-        string uniqueFileName = await vm.Image.UploadFile(_folderPath);
+        string uniqueFileName = await vm.Image.UploadFileAsync(_folderPath);
 
         Trainer trainer = new()
         {
@@ -86,6 +86,96 @@ public class TrainerController : Controller
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
+
+    }
+
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var trainer = await _context.Trainers.FindAsync(id);
+
+        if(trainer is null)
+        {
+            return NotFound();
+        }
+
+        _context.Trainers.Remove(trainer);
+        await _context.SaveChangesAsync();
+
+        string deletedImagePath = Path.Combine(_folderPath, trainer.ImagePath);
+
+        ExtensionMethods.DeleteFile(deletedImagePath);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Update(int id)
+    {
+        await _sendProfessionsWithViewBag();
+
+        var trainer = await _context.Trainers.FindAsync(id);
+        if(trainer is null) { return NotFound(); }
+
+        TrainerUpdateVM vm = new()
+        {
+            Id = id,
+            Name = trainer.Name,
+            Description = trainer.Description,
+            ProfessionId =trainer.ProfessionId
+        };
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Update(TrainerUpdateVM vm)
+    {
+        await _sendProfessionsWithViewBag();
+        if (!ModelState.IsValid)
+            return View(vm);
+
+        var isExistProfession = await _context.Professions.AnyAsync(x => x.Id == vm.ProfessionId);
+        if (!isExistProfession)
+        {
+            ModelState.AddModelError("ProfessionId", "This profession doesn't exist");
+            return View(vm);
+        }
+
+        if (!vm.Image?.CheckSize(2) ?? false)
+        {
+            ModelState.AddModelError("Image", "Image size must be less than 2 MB");
+            return View(vm);
+        }
+
+        if (!vm.Image?.CheckType("image") ?? false)
+        {
+            ModelState.AddModelError("image", "You must upload be Image");
+            return View(vm);
+        }
+
+        var existTrainer = await _context.Trainers.FindAsync(vm.Id);
+
+        if (existTrainer is null) return BadRequest();
+
+        existTrainer.Name = vm.Name;
+        existTrainer.Description = vm.Description;
+        existTrainer.ProfessionId = vm.ProfessionId;
+
+        if (vm.Image is { })
+        {
+            string newImagePath = await vm.Image.UploadFileAsync(_folderPath);
+
+            string oldImagePath = Path.Combine(_folderPath, existTrainer.ImagePath);
+            ExtensionMethods.DeleteFile(oldImagePath);
+            existTrainer.ImagePath = newImagePath;
+        }
+
+        _context.Trainers.Update(existTrainer);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index)); 
 
     }
 

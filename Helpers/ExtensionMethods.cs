@@ -13,16 +13,17 @@ namespace Fitness.Helpers
             return file.ContentType.Contains(type);
         }
 
-        public static async Task<string> UploadFile(this IFormFile file, string folderPath)
+        public static async Task<string> UploadFileAsync(this IFormFile file, string folderpath)
         {
-            string uniqueName = Guid.NewGuid().ToString() + file.FileName;
-            string path = Path.Combine(folderPath, uniqueName);
+            string uniqueFolderName = Guid.NewGuid().ToString() + file.FileName;
+            string path = Path.Combine(folderpath, uniqueFolderName);
             using FileStream stream = new(path, FileMode.Create);
 
             await file.CopyToAsync(stream);
+                       
 
+            return uniqueFolderName;
 
-            return uniqueName;
         }
 
         public static void DeleteFile(string path)

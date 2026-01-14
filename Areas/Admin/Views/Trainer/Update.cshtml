@@ -1,9 +1,10 @@
-﻿@model TrainerCreateVM
+﻿@model TrainerUpdateVM
 
 <div class="container">
-	<div class="row">
-
+    <div class="row">
+        <div><h2>UPDATE TRAINER</h2></div>
         <form method="post" enctype="multipart/form-data">
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="mb-3">
                 <label asp-for="Name" class="form-label"></label>
@@ -16,35 +17,35 @@
                 <input asp-for="Description" class="form-control" placeholder="Enter Description">
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-         
+
             <div class="mb-3">
                 <label asp-for="Image" class="form-label"></label>
                 <input asp-for="Image" class="form-control">
                 <span asp-validation-for="Image" class="text-danger"></span>
             </div>
-         
+
             <div class="mb-3">
                 <label asp-for="ProfessionId"></label>
                 <select asp-for="ProfessionId" class="form-select">
 
                     <option>--Select Profession--</option>
                     @foreach (Profession profession in ViewBag.Professions)
-                            {
-                                <option value="@profession.Id">@profession.Name</option>
-                            }
+                    {
+                        <option value="@profession.Id">@profession.Name</option>
+                    }
 
                 </select>
                 <span asp-validation-for="ProfessionId" class="text-danger"></span>
             </div>
-         
-            <button type="submit" class="btn btn-primary">Create</button>
+
+            <button type="submit" class="btn btn-warning">Update</button>
             <button asp-action="Index" class="btn btn-danger">Cancel</button>
         </form>
 
-	</div>
+    </div>
 </div>
 
-@section Scripts{
-<partial name="_ValidationScriptsPartial"></partial>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"></partial>
 
 }
